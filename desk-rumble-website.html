@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desk Rumble — Wishlist on Steam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F4ED;
+    --paper-alt: #EFEDE3;
+    --ink: #232323;
+    --ruler-blue: #3D5A80;
+    --highlighter: #F5D547;
+    --eraser: #F2685C;
+    --margin-red: #C1443C;
+    --rule-line: #D8D4C4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* ===== Notebook binding rail ===== */
+  .binding {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 42px;
+    height: 100%;
+    background: var(--paper-alt);
+    border-right: 2px solid var(--rule-line);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    padding-top: 40px;
+  }
+  .binding .hole {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+  }
+  .margin-rule {
+    position: fixed;
+    top: 0;
+    left: 66px;
+    width: 2px;
+    height: 100%;
+    background: var(--margin-red);
+    opacity: 0.55;
+    z-index: 49;
+  }
+
+  main { margin-left: 42px; }
+
+  .rule-lines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 37px,
+      var(--rule-line) 38px
+    );
+  }
+
+  section {
+    padding: 100px 80px 100px 100px;
+    position: relative;
+  }
+
+  @media (max-width: 900px) {
+    section { padding: 70px 24px 70px 56px; }
+    .binding { width: 26px; }
+    .margin-rule { left: 42px; }
+    main { margin-left: 26px; }
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* ===== sticky note tag ===== */
+  .tag {
+    display: inline-block;
+    font-family: 'Kalam', cursive;
+    font-size: 15px;
+    font-weight: 700;
+    background: var(--highlighter);
+    color: var(--ink);
+    padding: 6px 16px;
+    transform: rotate(-2.5deg);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+    margin-bottom: 24px;
+  }
+  .tag.pink { background: var(--eraser); color: #fff; }
+  .tag.blue { background: var(--ruler-blue); color: #fff; }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--paper);
+  }
+  .hero-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ruler-blue);
+    margin-bottom: 28px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 78px);
+    line-height: 1.02;
+    margin-bottom: 26px;
+  }
+  .hero h1 span {
+    color: var(--eraser);
+  }
+  .hero p.sub {
+    font-size: 19px;
+    max-width: 480px;
+    color: #454540;
+    margin-bottom: 36px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 30px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); background: var(--margin-red); }
+  .btn.ghost {
+    background: transparent;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+  }
+  .btn.ghost:hover { background: var(--ink); color: var(--paper); }
+
+  .hero-art {
+    aspect-ratio: 4/5;
+    background:
+      repeating-linear-gradient(135deg, #e4e0d1, #e4e0d1 14px, #dedad0 14px, #dedad0 28px);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7a7668;
+    font-family: 'Kalam', cursive;
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+    transform: rotate(2deg);
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.08);
+  }
+
+  .scroll-cue {
+    margin-top: 70px;
+    font-family: 'Kalam', cursive;
+    font-size: 14px;
+    color: #7a7668;
+  }
+
+  /* ===== HOOK ===== */
+  .hook {
+    background: var(--paper-alt);
+  }
+  .hook-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .hook-grid { grid-template-columns: 1fr; }
+    .hook-grid .hook-art { order: -1; }
+  }
+  .hook h2 {
+    font-size: clamp(30px, 4vw, 46px);
+    margin-bottom: 20px;
+    line-height: 1.08;
+  }
+  .hook p {
+    font-size: 17px;
+    color: #454540;
+    max-width: 460px;
+  }
+  .hook-art {
+    aspect-ratio: 1/1;
+    background: repeating-linear-gradient(45deg, #e9e5d8, #e9e5d8 12px, #e2ddcd 12px, #e2ddcd 24px);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7a7668;
+    font-family: 'Kalam', cursive;
+    text-align: center;
+    padding: 20px;
+    transform: rotate(-1.5deg);
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.08);
+  }
+
+  /* ===== GAMEPLAY ===== */
+  .gameplay { background: var(--paper); }
+  .section-head {
+    max-width: 620px;
+    margin-bottom: 56px;
+  }
+  .section-head h2 {
+    font-size: clamp(28px, 3.6vw, 42px);
+    margin-bottom: 14px;
+  }
+  .section-head p { color: #454540; font-size: 16px; }
+
+  .cards-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 900px) {
+    .cards-row { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.08);
+  }
+  .card:nth-child(2) { transform: rotate(0.6deg); }
+  .card:nth-child(3) { transform: rotate(-0.6deg); }
+  .card .thumb {
+    aspect-ratio: 16/10;
+    background: repeating-linear-gradient(135deg, #ece8db, #ece8db 10px, #e4e0d1 10px, #e4e0d1 20px);
+    border: 1.5px dashed #999;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #85806f;
+    font-size: 13px;
+    font-family: 'Kalam', cursive;
+    margin-bottom: 16px;
+    text-align: center;
+    padding: 10px;
+  }
+  .card .step-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ruler-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .card h3 { font-size: 19px; margin-bottom: 8px; }
+  .card p { font-size: 14.5px; color: #4a4a45; }
+
+  /* ===== PILLARS ===== */
+  .pillars { background: var(--paper-alt); }
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .pillar {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 24px 18px;
+    text-align: left;
+  }
+  .pillar .icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--highlighter);
+    margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+  }
+  .pillar:nth-child(2) .icon { background: var(--eraser); color: #fff; }
+  .pillar:nth-child(3) .icon { background: var(--ruler-blue); color: #fff; }
+  .pillar:nth-child(4) .icon { background: var(--margin-red); color: #fff; }
+  .pillar h3 { font-size: 16.5px; margin-bottom: 8px; }
+  .pillar p { font-size: 13.8px; color: #4a4a45; }
+
+  /* ===== PROOF ===== */
+  .proof { background: var(--paper); }
+  .proof-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 34px 0;
+  }
+  .stat { flex: 1; min-width: 160px; }
+  .stat .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 38px;
+    color: var(--margin-red);
+  }
+  .stat .label {
+    font-size: 13.5px;
+    color: #4a4a45;
+    margin-top: 4px;
+  }
+
+  /* ===== TEAM ===== */
+  .team { background: var(--paper-alt); }
+  .team-grid {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 50px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .team-grid { grid-template-columns: 1fr; }
+  }
+  .team-photo {
+    aspect-ratio: 1/1;
+    background: repeating-linear-gradient(90deg, #e4e0d1, #e4e0d1 10px, #dedad0 10px, #dedad0 20px);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Kalam', cursive;
+    color: #7a7668;
+    text-align: center;
+    padding: 16px;
+  }
+  .team-copy p { font-size: 16px; color: #454540; margin-bottom: 14px; max-width: 520px; }
+  .team-copy strong { color: var(--ink); }
+
+  /* ===== FINAL CTA ===== */
+  .final {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    padding: 120px 80px 100px 100px;
+  }
+  .final h2 {
+    font-size: clamp(30px, 4.5vw, 52px);
+    margin-bottom: 20px;
+  }
+  .final p { color: #cfcdc3; margin-bottom: 36px; font-size: 17px; }
+  .final .btn { background: var(--highlighter); color: var(--ink); }
+  .final .btn:hover { background: var(--eraser); color: #fff; }
+
+  footer {
+    background: var(--ink);
+    color: #8b8a83;
+    padding: 30px 80px 40px 100px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13.5px;
+    border-top: 1px solid #3a3a38;
+  }
+  footer a { color: #cfcdc3; text-decoration: none; margin-right: 18px; }
+  footer a:hover { color: var(--highlighter); }
+
+  @media (max-width: 900px) {
+    .final, footer { padding-left: 56px; padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="binding">
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+</div>
+<div class="margin-rule"></div>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero rule-lines">
+    <div class="hero-logo">✎ Desk Rumble</div>
+    <div class="hero-grid">
+      <div>
+        <h1>Watch your desk erupt into a <span>bullet storm</span> of childhood stationery.</h1>
+        <p class="sub">An incremental auto-shooter where pencils pierce, erasers block, and your pencil case fights to take back the desk. Coming to Steam, October 2026.</p>
+        <a href="#" class="btn">Wishlist on Steam →</a>
+      </div>
+      <div class="hero-art">GAMEPLAY TRAILER<br>/ KEY ART GOES HERE</div>
+    </div>
+    <div class="scroll-cue">↓ keep scrolling, it gets weirder</div>
+  </section>
+
+  <!-- HOOK -->
+  <section class="hook">
+    <div class="hook-grid">
+      <div>
+        <span class="tag">the hook</span>
+        <h2>Your childhood desk. Now armed.</h2>
+        <p>Every eraser was a shield. Every ruler, a sword. Desk Rumble turns the battles you doodled in the margins of your notebook into a real auto-shooter — where your pencil case fights, upgrades, and takes back the desk one stapler at a time.</p>
+      </div>
+      <div class="hook-art">"BEFORE / AFTER"<br>ordinary desk → battlefield<br>(art or GIF here)</div>
+    </div>
+  </section>
+
+  <!-- GAMEPLAY -->
+  <section class="gameplay">
+    <div class="section-head">
+      <span class="tag blue">core loop</span>
+      <h2>Fight. Loot. Level up. Repeat.</h2>
+      <p>Desk Rumble runs on a simple, addictive loop: survive a combat run, cash in what you find, then spend it on permanent upgrades before your next run.</p>
+    </div>
+    <div class="cards-row">
+      <div class="card">
+        <div class="thumb">combat run GIF</div>
+        <div class="step-label">01 — Combat</div>
+        <h3>Auto-shooter runs</h3>
+        <p>Your stationery squad fights waves of desk clutter automatically. You aim the strategy, not the trigger.</p>
+      </div>
+      <div class="card">
+        <div class="thumb">settlement screenshot</div>
+        <div class="step-label">02 — Settlement</div>
+        <h3>Cash in your loot</h3>
+        <p>Every run ends with a haul. Convert scraps and salvage into currency between battles.</p>
+      </div>
+      <div class="card">
+        <div class="thumb">skill tree screenshot</div>
+        <div class="step-label">03 — Meta progression</div>
+        <h3>Build your case</h3>
+        <p>Spend on a growing skill tree and skins that carry forward, so every run starts a little stronger.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILLARS -->
+  <section class="pillars">
+    <div class="section-head">
+      <span class="tag pink">why it works</span>
+      <h2>Not another sci-fi shooter</h2>
+      <p>Four things make Desk Rumble stick with people who'd normally scroll past a bullet-hell game.</p>
+    </div>
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="icon">1</div>
+        <h3>Childhood nostalgia</h3>
+        <p>Everyone had a desk battlefield in their head as a kid. This just makes it real.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">2</div>
+        <h3>Broad, gender-neutral appeal</h3>
+        <p>No armor, no lore-heavy sci-fi. Stationery is universal, so the audience is too.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">3</div>
+        <h3>Objects built for combat</h3>
+        <p>Pencils pierce, rulers swing, tape binds. The shapes were already made for it.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">4</div>
+        <h3>Real collecting behavior</h3>
+        <p>People already hoard cute stationery in real life. This just gives it a scoreboard.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section class="proof">
+    <div class="section-head">
+      <span class="tag">early signal</span>
+      <h2>People noticed before we even launched</h2>
+    </div>
+    <div class="proof-strip">
+      <div class="stat"><div class="num">80K+</div><div class="label">Bilibili views on early demo clips</div></div>
+      <div class="stat"><div class="num">1,000+</div><div class="label">Xiaohongshu likes on the art style</div></div>
+      <div class="stat"><div class="num">&lt;¥7,000</div><div class="label">spent to get that reach</div></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="team">
+    <div class="team-grid">
+      <div class="team-photo">team photo<br>or avatars</div>
+      <div class="team-copy">
+        <span class="tag blue">the team</span>
+        <p>A small studio out of NYU Game Design and the Lu Xun Academy of Fine Arts, currently polishing Desk Rumble toward a Steam Next Fest launch in <strong>October 2026</strong>.</p>
+        <p>Not our first shipped game — our prior title <strong>Feather Land</strong> is signed with a publisher and has crossed 15,000 wishlists ahead of its own launch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <h2>The desk is waiting.</h2>
+    <p>Wishlist now and get notified the moment Desk Rumble launches on Steam.</p>
+    <a href="#" class="btn">Wishlist on Steam →</a>
+  </section>
+
+  <footer>
+    <div>© 2026 Desk Rumble. All rights reserved.</div>
+    <div>
+      <a href="#">Discord</a>
+      <a href="#">Twitter / X</a>
+      <a href="#">Press Kit</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>
